@@ -1,1 +1,39 @@
-<p>selector-page works!</p>
+<h1 class="mt-5">Selectores anidados</h1>
+<hr>
+
+<form [formGroup]="miFormulario" (ngSubmit)="guardar()">
+
+    <!-- Selector de continentes -->
+    <div class="row mb-3">
+        <div class="col">
+            <label class="form-label">Continente:</label>
+            <select class="form-control" formControlName="region">
+                <option value="">-- Seleccione Continente --</option>
+                <option *ngFor="let region of regiones" [value]="region">{{region | lowercase}}</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Selector de paises -->
+    <div class="row mb-3">
+        <div class="col">
+            <label class="form-label">Pais:</label>
+            <select class="form-control" formControlName="pais">
+                <option value="">-- Seleccione País --</option>
+                <option *ngFor="let pais of paises" [value]="pais.cca3">{{pais.name.common | lowercase}}</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Boton seleccionar -->
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary float-end" type="submit">Seleccionar</button>
+        </div>
+    </div>
+
+</form>
+
+<h3>Formulario</h3>
+<pre>{{ miFormulario.valid }}</pre>
+<pre>{{ miFormulario.value | json }}</pre>
