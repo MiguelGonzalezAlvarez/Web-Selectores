@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { switchMap, tap } from 'rxjs/operators';
 
 import { PaisesService } from '../../services/paises.service';
-import { Pais } from '../../interfaces/paises.interface';
+import { Frontera, Pais } from '../../interfaces/paises.interface';
 
 
 @Component({
@@ -16,12 +16,14 @@ export class SelectorPageComponent implements OnInit {
 
   miFormulario: FormGroup = this.formBuilder.group({
     region: ['', Validators.required],
-    pais: ['', Validators.required]
+    pais: ['', Validators.required],
+    frontera: ['', Validators.required]
   });
 
   // Array definition
   regiones: string[] = [];
   paises: Pais[] = [];
+  fronteras: Frontera[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -39,6 +41,16 @@ export class SelectorPageComponent implements OnInit {
     ).subscribe(response => {
       this.paises = response;
     });
+
+    // Rellenamos el array de fronteras
+    this.miFormulario.get('pais')?.valueChanges.pipe(
+      tap(() => this.miFormulario.get('frontera')?.reset('')),
+      switchMap(paisSelected => this.paisesService.getFronterasPorCodigo(paisSelected))
+    ).subscribe(response => {
+      this.fronteras = response;
+    });
+
+
 
   }
 

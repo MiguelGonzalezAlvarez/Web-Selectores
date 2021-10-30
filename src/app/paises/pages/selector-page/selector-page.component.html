@@ -17,10 +17,21 @@
     <!-- Selector de paises -->
     <div class="row mb-3">
         <div class="col">
-            <label class="form-label">Pais:</label>
+            <label class="form-label">País:</label>
             <select class="form-control" formControlName="pais">
                 <option value="">-- Seleccione País --</option>
                 <option *ngFor="let pais of paises" [value]="pais.cca3">{{pais.name.common | lowercase}}</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Selector de fronteras -->
+    <div class="row mb-3">
+        <div class="col">
+            <label class="form-label">Frontera:</label>
+            <select class="form-control" formControlName="frontera">
+                <option value="">-- Seleccione Frontera --</option>
+                <option *ngFor="let frontera of fronteras" [value]="frontera.cca3">{{frontera.name.common | lowercase}}</option>
             </select>
         </div>
     </div>
