@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { Pais } from '../interfaces/paises.interface';
 
 @Injectable({
@@ -20,14 +20,34 @@ export class PaisesService {
   ) { }
 
   getPaisesPorRegion(region: string): Observable<Pais[]> {
-    return this.http.get<Pais[]>(`${this.baseUrl}/region/${region}`);
+    return this.http.get<Pais[]>(`${this.baseUrl}/region/${region}?fields=name,cca3`);
   }
 
-  getFronterasPorCodigo(codigo: string): Observable<Pais[]> {
-    if(!codigo) {
+  getPaisesPorCodigo(codigo: string): Observable<Pais | null> {
+    if (!codigo) {
+      return of(null);
+    }
+    return this.http.get<Pais>(`${this.baseUrl}/alpha/${codigo}?fields=borders`);
+  }
+
+  getFronteraPorCodigo(codigo: string): Observable<Pais> {
+    return this.http.get<Pais>(`${this.baseUrl}/alpha/${codigo}?fields=name,cca3`);
+  }
+
+  getFronteras(codigosFronteras: string[]): Observable<Pais[]> {
+
+    if (!codigosFronteras) {
       return of([]);
     }
-    return this.http.get<Pais[]>(`${this.baseUrl}/alpha/${codigo}`);
+
+    const peticiones: Observable<Pais>[] = [];
+
+    codigosFronteras.forEach(codigoFrontera => {
+      const peticion = this.getFronteraPorCodigo(codigoFrontera);
+      peticiones.push(peticion);
+    });
+
+    return combineLatest(peticiones);
   }
 
 }

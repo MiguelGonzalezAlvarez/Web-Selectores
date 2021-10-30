@@ -23,7 +23,7 @@ export class SelectorPageComponent implements OnInit {
   // Array definition
   regiones: string[] = [];
   paises: Pais[] = [];
-  fronteras: string[] = [];
+  fronteras: Pais[] = [];
 
   // Alerts definition
   cargando: boolean = false;
@@ -57,9 +57,10 @@ export class SelectorPageComponent implements OnInit {
         this.miFormulario.get('frontera')?.reset('');
         this.cargando = true;
       }),
-      switchMap(paisSelected => this.paisesService.getFronterasPorCodigo(paisSelected))
-    ).subscribe(response => {
-      this.fronteras = response[0]?.borders || [];
+      switchMap(codigoPais => this.paisesService.getPaisesPorCodigo(codigoPais)),
+      switchMap(paisSelected => this.paisesService.getFronteras(paisSelected?.borders!))
+    ).subscribe(fronteras => {
+      this.fronteras = fronteras || [];
       this.cargando = false;
       this.noFronteras = this.fronteras.length === 0;
     });
