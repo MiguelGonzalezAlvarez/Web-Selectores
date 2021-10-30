@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { switchMap, tap } from 'rxjs/operators';
 
 import { PaisesService } from '../../services/paises.service';
-import { Frontera, Pais } from '../../interfaces/paises.interface';
+import { Pais } from '../../interfaces/paises.interface';
 
 
 @Component({
@@ -23,7 +23,11 @@ export class SelectorPageComponent implements OnInit {
   // Array definition
   regiones: string[] = [];
   paises: Pais[] = [];
-  fronteras: Frontera[] = [];
+  fronteras: string[] = [];
+
+  // Alerts definition
+  cargando: boolean = false;
+  noFronteras: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -36,22 +40,29 @@ export class SelectorPageComponent implements OnInit {
 
     // Rellenamos el array de paises
     this.miFormulario.get('region')?.valueChanges.pipe(
-      tap(() => this.miFormulario.get('pais')?.reset('')),
+      tap(() => {
+        this.miFormulario.get('pais')?.reset('');
+        this.noFronteras = false;
+        this.cargando = true;
+      }),
       switchMap(regionSelected => this.paisesService.getPaisesPorRegion(regionSelected))
     ).subscribe(response => {
       this.paises = response;
+      this.cargando = false;
     });
 
     // Rellenamos el array de fronteras
     this.miFormulario.get('pais')?.valueChanges.pipe(
-      tap(() => this.miFormulario.get('frontera')?.reset('')),
+      tap(() => {
+        this.miFormulario.get('frontera')?.reset('');
+        this.cargando = true;
+      }),
       switchMap(paisSelected => this.paisesService.getFronterasPorCodigo(paisSelected))
     ).subscribe(response => {
-      this.fronteras = response;
+      this.fronteras = response[0]?.borders || [];
+      this.cargando = false;
+      this.noFronteras = this.fronteras.length === 0;
     });
-
-
-
   }
 
   guardar() {
